@@ -3,7 +3,5 @@ joblib
 pandas
 numpy
 datasets
-fastapi
-uvicorn
-streamlit
+flask
 gunicorn
