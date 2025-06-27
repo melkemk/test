@@ -1,10 +1,9 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from flask import Flask, request, jsonify
 import joblib
 import re
 import numpy as np
 
-app = FastAPI(title="IMDB Review Sentiment Classifier API")
+api = Flask(__name__)
 
 # Load model and vectorizer at startup
 try:
@@ -20,20 +19,21 @@ def clean_text(text):
     text = re.sub(r'[^a-z0-9\s]', '', text)
     return text
 
-class ReviewRequest(BaseModel):
-    text: str
-
-@app.post("/predict")
-def predict_sentiment(request: ReviewRequest):
+@api.route('/predict', methods=['POST'])
+def predict_sentiment():
     if clf is None or vectorizer is None:
-        raise HTTPException(status_code=500, detail="Model or vectorizer not loaded.")
-    review = request.text
-    if not review or not review.strip():
-        raise HTTPException(status_code=400, detail="Text field is empty.")
+        return jsonify({"error": "Model or vectorizer not loaded."}), 500
+    data = request.get_json()
+    if not data or 'text' not in data or not data['text'].strip():
+        return jsonify({"error": "Text field is empty."}), 400
+    review = data['text']
     review_clean = clean_text(review)
     X = vectorizer.transform([review_clean])
     proba = clf.predict_proba(X)[0]
     label_idx = int(np.argmax(proba))
     label = "positive" if label_idx == 1 else "negative"
     confidence = float(proba[label_idx])
-    return {"label": label, "confidence": round(confidence, 2)} 
+    return jsonify({"label": label, "confidence": round(confidence, 2)})
+
+if __name__ == "__main__":
+    api.run(debug=True)
