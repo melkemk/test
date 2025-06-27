@@ -65,9 +65,7 @@ ENV/
 env.bak/
 venv.bak/
 
-# Model and vectorizer files
-model.joblib
-vectorizer.joblib
+
 
 # System files
 .DS_Store
