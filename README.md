@@ -60,7 +60,7 @@ Response:
 ## Project Structure
 - `train.py`: Training script
 - `predict.py`: Command-line prediction script
-- `api.py`: FastAPI app (optional)
+- `api.py`: FastAPI app 
 - `requirements.txt`: Dependencies
 - `README.md`: Project documentation
 
